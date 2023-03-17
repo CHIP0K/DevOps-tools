@@ -54,7 +54,7 @@ jobs:
           context: .
           file: ./Dockerfile-ubuntu-focal
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}-focal
   build-devops-tools-jammy:
     runs-on: ubuntu-latest
     steps:
@@ -89,4 +89,4 @@ jobs:
           context: .
           file: ./Dockerfile-ubuntu-jammy
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}-jammy
