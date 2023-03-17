@@ -1,0 +1,38 @@
+FROM ubuntu:jammy
+LABEL maintainer='Ihor Stetsiuk <stetsyukia@gmail.com>' \
+      terraform_version='${TERRAFORM_VERSION}' \
+      ansible_version='${ANSIBLE_VERSION}' \
+      version='1.0.0'
+
+### environment
+ENV TERRAFORM_VERSION 1.4.1
+ENV ANSIBLE_VERSION 7.3.0
+ENV S3CMD_VERSION 2.3.0
+ENV DNSCONTROL_VERSION v3.28.0
+
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update && apt-get install -yqq \
+    curl \
+    unzip \
+    git \
+    pip \
+    jq \
+    rsync \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+###( Install terraform )###
+RUN curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+  && unzip -qq /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin
+###( Install ansible )###
+RUN pip install -U ansible==${ANSIBLE_VERSION} s3cmd==${S3CMD_VERSION} \
+  && mkdir -p /etc/ansible
+###( Install dnscontrol )###
+RUN curl -L https://github.com/StackExchange/dnscontrol/releases/download/${DNSCONTROL_VERSION}/dnscontrol-Linux -o /usr/local/bin/dnscontrol \
+  && chmod +x /usr/local/bin/dnscontrol
+###( Install google-cloud-sdk )###
+RUN  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg \
+  && apt-get update -yqq && apt-get install google-cloud-sdk -yqq \
+  && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+COPY config/ansible-jammy.cfg /etc/ansible/ansible.cfg
+

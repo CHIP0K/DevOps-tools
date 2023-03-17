@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - "main"
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches:
+      - "main"
 
 jobs:
   build:
@@ -22,6 +26,12 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+      - 
+        name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/devops-tools
       -
         name: Build and push Dockerfile-ubuntu-focal
         uses: docker/build-push-action@v4
@@ -30,4 +40,12 @@ jobs:
           file: ./Dockerfile-ubuntu-focal
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-tools:0.0.0-focal
-      
+      - 
+        name: Build and push Dockerfile-ubuntu-jammy
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile-ubuntu-jammy
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-tools:0.0.0-jammy
+
