@@ -15,8 +15,11 @@ on:
   #   branches:
   #     - "main"
 
+env:
+  DEVOPS_IMAGE_NAME: terraform-ansible
+
 jobs:
-  build:
+  build-devops-tools:
     runs-on: ubuntu-latest
     steps:
       -
@@ -37,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/devops-tools
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DEVOPS_IMAGE_NAME }}
       -
         name: Build and push Dockerfile-ubuntu-focal
         uses: docker/build-push-action@v4
@@ -46,7 +49,7 @@ jobs:
           context: .
           file: ./Dockerfile-ubuntu-focal
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-tools:0.0.0-focal
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DEVOPS_IMAGE_NAME }}:0.4.0-focal
       - 
         name: Build and push Dockerfile-ubuntu-jammy
         uses: docker/build-push-action@v4
@@ -55,5 +58,5 @@ jobs:
           context: .
           file: ./Dockerfile-ubuntu-jammy
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-tools:0.0.0-jammy
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DEVOPS_IMAGE_NAME }}:1.1.0-jammy
 
