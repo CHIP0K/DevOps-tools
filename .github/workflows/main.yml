@@ -1,13 +1,19 @@
 name: "CI Build docker image"
+run-name: ${{ github.actor }} is building docker images
 
 on:
   push:
-    branches:
-      - "main"
+    # branches:
+    #   - "main"
     tags: [ 'v*.*.*' ]
-  pull_request:
-    branches:
-      - "main"
+    paths-ignore:
+      - '.github/**/*.yml'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+  # pull_request:
+  #   branches:
+  #     - "main"
 
 jobs:
   build:
