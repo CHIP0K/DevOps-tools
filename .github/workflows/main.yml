@@ -4,13 +4,13 @@ run-name: ${{ github.actor }} is building docker images
 on:
   push:
     branches:
-      - "develop"
+      - "dev-*"
     tags: [ 'v*.*.*' ]
-    # paths-ignore:
-    #   - '.github/**/*.yml'
-    #   - '.gitignore'
-    #   - 'LICENSE'
-    #   - 'README.md'
+    paths-ignore:
+      - '.github/**/*.yml'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
   # pull_request:
   #   branches:
   #     - "main"
