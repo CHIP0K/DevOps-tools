@@ -18,7 +18,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     pip \
     jq \
     rsync \
-    pigz pbzip2 pxz \
+    pigz pbzip2 pixz \
 ###( Install google-cloud-sdk )###
   && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg && apt-get update -yqq && apt-get install google-cloud-sdk -yqq \
   && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
