@@ -3,6 +3,15 @@
 REMOVE_DOMAINS=("${@}")
 CONFIG_PATH="/opt/docker/certmanager/dnsrobocert/config.yml"
 
+GREEN='\033[0;32m'  # Green
+RED="\033[0;31m"    # Red
+COLOR_OFF="\033[0m" # Text Reset
+
+if [[ -z ${1} ]]; then
+    echo -e "\n${GREEN}Run this script:\n${RED}  ${0##*/} <domain-name.com>${COLOR_OFF}\n"
+    exit 1
+fi
+
 checkLock() {
     if [[ $(pgrep -fc "${0##*/}") -ne 1 ]]; then
         echo "Script ${0##*/} is running"
