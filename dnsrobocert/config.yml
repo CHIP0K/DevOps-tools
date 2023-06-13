@@ -1,0 +1,40 @@
+---
+acme:
+  email_account: ihor.stetsiuk@futurragroup.com
+profiles:
+  - name: cloudflare_profile
+    provider: cloudflare
+    provider_options:
+      auth_username: user@example.com
+      auth_token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  - name: namecheap_profile
+    provider: namecheap
+    provider_options:
+      auth_username: username
+      auth_token: XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      auth_client_ip: 100.100.100.100
+    sleep_time: 60
+    max_checks: 5
+    ttl: 60
+  - name: aws_profile
+    provider: route53
+    provider_options:
+      auth_access_key: AKXXXXXXXXXXXAK
+      auth_access_secret: XXXXXXXXXXXXXXXXXXXXXXX
+      private_zone: false
+    sleep_time: 60
+    max_checks: 5
+    ttl: 60
+  - name: cloudns
+    provider: cloudns
+    provider_options:
+      auth_id: 11111
+      auth_password: XXXXXXXXXXXXXXXX
+    sleep_time: 60
+    max_checks: 5
+    ttl: 60
+certificates:
+  - domains:
+      - "*.example.com"
+      - "example.com"
+    profile: namecheap_profile
