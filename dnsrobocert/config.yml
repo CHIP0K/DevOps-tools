@@ -1,6 +1,6 @@
 ---
 acme:
-  email_account: ihor.stetsiuk@futurragroup.com
+  email_account: user@example.com
 profiles:
   - name: cloudflare_profile
     provider: cloudflare
