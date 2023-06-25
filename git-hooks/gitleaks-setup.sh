@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ueo pipefail
 source /etc/environment
 
 INSTALL_APP_PATH="${HOME}/.local/bin"
@@ -92,7 +93,9 @@ install_on_unix() {
     fi
 }
 
-
+installPreCommitHOOK() {
+    curl -sSl
+}
 
 main() {
     checkDependencies
