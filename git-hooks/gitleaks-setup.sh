@@ -84,9 +84,7 @@ install_on_unix() {
             echo -e "Installing from GitHUB"
             install_from_git
             echo -e "${GREEN}If you want to use gitleaks in shell,
-            please modify the profile ~/.bashrc or ~/.zshrc: ${YELLOW}export PATH=${INSTALL_APP_PATH}:\$PATH
-            ${COLOR_OFF}
-            "
+please modify the profile ~/.bashrc or ~/.zshrc: ${YELLOW}export PATH=${INSTALL_APP_PATH}:\$PATH${COLOR_OFF}"
         fi
     else
         echo -e "${GREEN}gitleaks is installed${COLOR_OFF}"
@@ -144,9 +142,7 @@ EOF
 
 chmod +x "${INSTALL_APP_PATH}"/git-hook/pre-commit
 git config --global core.hooksPath "${INSTALL_APP_PATH}"/git-hook/
-echo -e "${YELLOW}pre-commit${GREEN} installed to path:
-        ${YELLOW}${INSTALL_APP_PATH}/git-hook${COLOR_OFF}\n
-        "
+echo -e "${YELLOW}pre-commit${GREEN} installed to path: ${YELLOW}${INSTALL_APP_PATH}/git-hook${COLOR_OFF}\n"
 
 }
 
