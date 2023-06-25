@@ -83,21 +83,21 @@ install_on_unix() {
         else
             echo -e "Installing from GitHUB"
             install_from_git
+            export PS1="${PS1:-}"
             case $SHELL in
             /bin/zsh)
                 echo "export PATH=${INSTALL_APP_PATH}:\$PATH" >>~/.zshrc
-                source ~/.zshrc
+                . ~/.zshrc
                 ;;
             /bin/bash)
                 echo "export PATH=${INSTALL_APP_PATH}:\$PATH" >>~/.bashrc
-                source ~/.bashrc
+                . ~/.bashrc
                 ;;
             *)
                 echo -e "${GREEN}If you want to use gitleaks in shell,
 please modify the profile ${RED}~/.bashrc ${GREEN}or ${RED}~/.zshrc${GREEN} or other RC profile: ${YELLOW}export PATH=${INSTALL_APP_PATH}:\$PATH${COLOR_OFF}"
                 ;;
             esac
-
         fi
     else
         echo -e "${GREEN}gitleaks is installed${COLOR_OFF}"
