@@ -95,7 +95,7 @@ install_on_unix() {
 
 installPreCommitHOOK() {
     [[ -d "${INSTALL_APP_PATH}"/git-hook ]] || mkdir -p "${INSTALL_APP_PATH}"/git-hook
-    [[ -x "${INSTALL_APP_PATH}"/git-hook/gitleaks-check.sh ]] || cat > "${INSTALL_APP_PATH}"/git-hook/gitleaks-check.sh <<'EOF'
+    [[ -x "${INSTALL_APP_PATH}"/git-hook/pre-commit ]] || cat > "${INSTALL_APP_PATH}"/git-hook/pre-commit <<'EOF'
 #!/usr/bin/env bash
 
 GREEN='\033[0;32m'  # Green
@@ -105,8 +105,10 @@ COLOR_OFF="\033[0m" # Text Reset
 
 help() {
     echo -e "Enable security check for ${0##*/}:\n
-    1) Run this command
-        ${GREEN}git config --global core.hooksPath ${YELLOW}/path/to/script/${COLOR_OFF}
+    1) Copy this script to you git-hook path
+    2) Rename sctipt ${0##*/} as pre-commit
+    3) Run this command
+        ${GREEN}git config --global core.hooksPath ${YELLOW}/path/to/this/script/${COLOR_OFF}
     "
 }
 
@@ -140,9 +142,12 @@ esac
 
 EOF
 
-    chmod +x "${INSTALL_APP_PATH}"/git-hook/gitleaks-check.sh
-    echo -e "${YELLOW}gitleaks-check.sh${RED} installed to path:
-        ${INSTALL_APP_PATH}/git-hook${COLOR_OFF}"
+chmod +x "${INSTALL_APP_PATH}"/git-hook/pre-commit
+git config --global core.hooksPath "${INSTALL_APP_PATH}"/git-hook/
+echo -e "${YELLOW}pre-commit${GREEN} installed to path:
+        ${YELLOW}${INSTALL_APP_PATH}/git-hook${COLOR_OFF}\n
+        "
+
 }
 
 main() {
@@ -150,8 +155,7 @@ main() {
     check_arch
     check_os
     install_on_unix
-    installPreCommitHOOK \
-    && "${INSTALL_APP_PATH}"/git-hook/gitleaks-check.sh help
+    installPreCommitHOOK
 }
 
 main

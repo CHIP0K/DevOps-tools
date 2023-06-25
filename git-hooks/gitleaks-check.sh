@@ -6,7 +6,12 @@ RED="\033[0;31m"    # Red
 COLOR_OFF="\033[0m" # Text Reset
 
 help() {
-    echo -e "${GREEN}git config --global core.hooksPath ${YELLOW}${0##*/}${COLOR_OFF}"
+    echo -e "Enable security check for ${0##*/}:\n
+    1) Copy this script to you git-hook path
+    2) Rename sctipt ${0##*/} as pre-commit
+    3) Run this command
+        ${GREEN}git config --global core.hooksPath ${YELLOW}/path/to/this/script/${COLOR_OFF}
+    "
 }
 
 check() {
