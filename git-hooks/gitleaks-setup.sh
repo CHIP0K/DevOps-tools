@@ -141,6 +141,8 @@ esac
 EOF
 
     chmod +x "${INSTALL_APP_PATH}"/git-hook/gitleaks-check.sh
+    echo -e "${YELLOW}gitleaks-check.sh${RED} installed to path:
+        ${INSTALL_APP_PATH}/git-hook${COLOR_OFF}"
 }
 
 main() {
