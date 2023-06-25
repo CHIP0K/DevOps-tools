@@ -11,19 +11,19 @@ YELLOW="\033[0;33m" # Yellow
 COLOR_OFF="\033[0m" # Text Reset
 
 checkDependencies() {
-  deps=(grep curl jq git)
-  function installed {
-    cmd=$(command -v "${1}")
-    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
-    return ${?}
-  }
-  function die {
-    echo -e >&2 "${RED}Fatal: ${*}${COLOR_OFF}"
-    exit 1
-  }
-  for dep in "${deps[@]}"; do
-    installed "${dep}" || die "Missing '${dep}'"
-  done
+    deps=(grep curl jq git)
+    function installed {
+        cmd=$(command -v "${1}")
+        [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+        return ${?}
+    }
+    function die {
+        echo -e "${RED}Fatal: ${*}${COLOR_OFF}" >&2
+        exit 1
+    }
+    for dep in "${deps[@]}"; do
+        installed "${dep}" || die "Missing '${dep}'"
+    done
 }
 
 check_arch() {
@@ -83,8 +83,21 @@ install_on_unix() {
         else
             echo -e "Installing from GitHUB"
             install_from_git
-            echo -e "${GREEN}If you want to use gitleaks in shell,
-please modify the profile ${RED}~/.bashrc ${GREEN}or ${RED}~/.zshrc${GREEN}: ${YELLOW}export PATH=${INSTALL_APP_PATH}:\$PATH${COLOR_OFF}"
+            case $SHELL in
+            /bin/zsh)
+                echo "export PATH=${INSTALL_APP_PATH}:\$PATH" >>~/.zshrc
+                source ~/.zshrc
+                ;;
+            /bin/bash)
+                echo "export PATH=${INSTALL_APP_PATH}:\$PATH" >>~/.bashrc
+                source ~/.bashrc
+                ;;
+            *)
+                echo -e "${GREEN}If you want to use gitleaks in shell,
+please modify the profile ${RED}~/.bashrc ${GREEN}or ${RED}~/.zshrc${GREEN} or other RC profile: ${YELLOW}export PATH=${INSTALL_APP_PATH}:\$PATH${COLOR_OFF}"
+                ;;
+            esac
+
         fi
     else
         echo -e "${GREEN}gitleaks is installed${COLOR_OFF}"
@@ -93,7 +106,7 @@ please modify the profile ${RED}~/.bashrc ${GREEN}or ${RED}~/.zshrc${GREEN}: ${Y
 
 installPreCommitHOOK() {
     [[ -d "${INSTALL_APP_PATH}"/git-hook ]] || mkdir -p "${INSTALL_APP_PATH}"/git-hook
-    [[ -x "${INSTALL_APP_PATH}"/git-hook/pre-commit ]] || cat > "${INSTALL_APP_PATH}"/git-hook/pre-commit <<'EOF'
+    [[ -x "${INSTALL_APP_PATH}"/git-hook/pre-commit ]] || cat >"${INSTALL_APP_PATH}"/git-hook/pre-commit <<'EOF'
 #!/usr/bin/env bash
 
 GREEN='\033[0;32m'  # Green
@@ -140,9 +153,9 @@ esac
 
 EOF
 
-chmod +x "${INSTALL_APP_PATH}"/git-hook/pre-commit
-git config --global core.hooksPath "${INSTALL_APP_PATH}"/git-hook/
-echo -e "${YELLOW}pre-commit${GREEN} hook installed to path: ${YELLOW}${INSTALL_APP_PATH}/git-hook${COLOR_OFF}\n"
+    chmod +x "${INSTALL_APP_PATH}"/git-hook/pre-commit
+    git config --global core.hooksPath "${INSTALL_APP_PATH}"/git-hook/
+    echo -e "${YELLOW}pre-commit${GREEN} hook installed to path: ${YELLOW}${INSTALL_APP_PATH}/git-hook${COLOR_OFF}\n"
 
 }
 
