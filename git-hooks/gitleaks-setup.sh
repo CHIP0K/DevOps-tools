@@ -81,6 +81,7 @@ install_on_unix() {
             echo -e "Installing gitleaks with brew"
             brew install gitleaks
         else
+            checkDependencies
             echo -e "Installing from GitHUB"
             install_from_git
             export PS1="${PS1:-}"
@@ -160,7 +161,6 @@ EOF
 }
 
 main() {
-    checkDependencies
     check_arch
     check_os
     install_on_unix
