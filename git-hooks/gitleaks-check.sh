@@ -14,7 +14,7 @@ help() {
     "
 }
 
-check() {
+checkGitleaks() {
     # Run gitleaks with parameters
     gitleaks detect -v --log-opts "HEAD" --no-git
 
@@ -33,11 +33,18 @@ check() {
     fi
 }
 
+main() {
+    checkGitleaks
+}
+
 case $1 in
     help)
     help
     ;;
+    gitleaks)
+    checkGitleaks
+    ;;
     *)
-    check
+    main
     ;;
 esac
