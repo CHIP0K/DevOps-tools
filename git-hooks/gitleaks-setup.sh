@@ -131,10 +131,10 @@ check() {
     # Return code
     if [[ $? -ne 0 ]]; then
         if [[ "$LANG" = "uk_UA.UTF-8" ]]; then
-          echo -e "${RED}Помилка: Знайдені проблеми з безпекою в коді.${COLOR_OFF}"
+          echo -e "\n${RED}Помилка: Знайдені проблеми з безпекою в коді.${COLOR_OFF}\n"
           exit 1
         else
-          echo -e "${RED}Error: Security issues have been found in the code.${COLOR_OFF}"
+          echo -e "\n${RED}Error: Security issues have been found in the code.${COLOR_OFF}\n"
           exit 1
         fi
     else
