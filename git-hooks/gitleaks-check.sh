@@ -16,7 +16,8 @@ help() {
 
 check() {
     # Run gitleaks with parameters
-    gitleaks detect --report-format json --redact -v --log-opts "HEAD~1..HEAD"
+    # gitleaks detect --report-format json --redact -v --log-opts "HEAD~1..HEAD"
+    gitleaks detect --report-format json -v --log-opts "HEAD" --no-git
 
     # Return code
     if [[ $? -ne 0 ]]; then
