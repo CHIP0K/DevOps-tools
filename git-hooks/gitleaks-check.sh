@@ -16,7 +16,7 @@ help() {
 
 checkGitleaks() {
     # Run gitleaks with parameters
-    gitleaks detect -v --log-opts "HEAD" --no-git
+    gitleaks detect -v --log-opts "HEAD~1..HEAD"
 
     # Return code
     if [[ $? -ne 0 ]]; then
