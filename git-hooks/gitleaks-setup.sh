@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -ueo pipefail
-source /etc/environment
+[[ -e /etc/environment ]] && source /etc/environment
 
 INSTALL_APP_PATH="${HOME}/.local/bin"
 GITHUB_REPO="gitleaks/gitleaks"
