@@ -107,7 +107,8 @@ please modify the profile ${RED}~/.bashrc ${GREEN}or ${RED}~/.zshrc${GREEN} or o
 
 installPreCommitHOOK() {
     [[ -d "${INSTALL_APP_PATH}"/git-hook ]] || mkdir -p "${INSTALL_APP_PATH}"/git-hook
-    [[ -x "${INSTALL_APP_PATH}"/git-hook/pre-commit ]] || cat >"${INSTALL_APP_PATH}"/git-hook/pre-commit <<'EOF'
+    # [[ -x "${INSTALL_APP_PATH}"/git-hook/pre-commit ]] ||
+    cat >"${INSTALL_APP_PATH}"/git-hook/pre-commit <<'EOF'
 #!/usr/bin/env bash
 
 GREEN='\033[0;32m'  # Green
