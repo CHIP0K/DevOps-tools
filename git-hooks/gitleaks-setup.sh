@@ -128,7 +128,7 @@ help() {
 checkGitleaks() {
     # Run gitleaks with parameters
     # gitleaks detect -v --log-opts "HEAD~1..HEAD"
-    gitleaks protect -v
+    gitleaks protect -v --staged
 
     # Return code
     if [[ $? -ne 0 ]]; then
