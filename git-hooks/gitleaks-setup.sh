@@ -88,11 +88,9 @@ install_on_unix() {
             case $SHELL in
             /bin/zsh)
                 echo "export PATH=${INSTALL_APP_PATH}:\$PATH" >>~/.zshrc
-                . ~/.zshrc
                 ;;
             /bin/bash)
                 echo "export PATH=${INSTALL_APP_PATH}:\$PATH" >>~/.bashrc
-                . ~/.bashrc
                 ;;
             *)
                 echo -e "${GREEN}If you want to use gitleaks in shell,

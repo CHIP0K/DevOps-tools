@@ -1,5 +1,9 @@
 # Installation Script
 
+## Demo
+
+[![asciicast](https://asciinema.org/a/594774.svg)](https://asciinema.org/a/594774)
+
 ## Dependence tools
 
 - curl
