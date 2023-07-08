@@ -14,6 +14,28 @@ db1
 db2
 "
 
+checkLock() {
+    if [[ $(pgrep -fc "${0##*/}") -ne 1 ]]; then
+        echo "Script ${0##*/} is running"
+        exit 1
+    fi
+}
+checkDependencies() {
+    deps=(mysql mysqldump find gzip s3cmd)
+    function installed {
+        cmd=$(command -v "${1}")
+        [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+        return ${?}
+    }
+    function die {
+        echo >&2 "Fatal: ${*}"
+        exit 1
+    }
+    for dep in "${deps[@]}"; do
+        installed "${dep}" || die "Missing '${dep}'"
+    done
+}
+
 dumpPrepare() {
     # Create Backup sub-directories
     MBD="${DUMP_PATH}/${DUMP_HOST_IDENTITY}/mysql"
@@ -78,7 +100,9 @@ pushDumpS3CMD() {
 }
 
 main() {
-    dumpPrepare &&
+    checkDependencies &&
+        checkLock &&
+        dumpPrepare &&
         createDump &&
         pushDumpS3CMD
 }
