@@ -5,8 +5,8 @@ MYSQL_CONFIG_PATH="${1:-~/.my.cnf}"
 DUMP_FORMAT="${2:-table}" # Avaliable formats "table|full|all", default table
 DUMP_PATH="${3:-/opt/backups/}"
 DUMP_ROTATE_DAYS="3"
-DUMP_HOST_IDENTITY="$(hostname)_$(date +"%d-%m-%Y")" # Get date in dd-mm-yyyy_s format
-DUMP_TIMESTAMP="$(date +"%d-%m-%Y_%s")"
+DUMP_HOST_IDENTITY="$(hostname)_$(date +"%Y-%m-%d")"
+DUMP_TIMESTAMP="$(date +"%Y-%m-%d_%s")"
 S3CMD_BUCKET="db.backup/mysqldump-for-slave"
 
 BACKUP_DATABASES="
@@ -20,6 +20,7 @@ checkLock() {
         exit 1
     fi
 }
+
 checkDependencies() {
     deps=(mysql mysqldump find gzip s3cmd)
     function installed {
@@ -98,6 +99,7 @@ pushDumpS3CMD() {
         s3cmd sync "${MBD}"/"${DUMP_NAME}"/* s3://"${S3CMD_BUCKET}"/"${DUMP_NAME}"/ &>/dev/null
     done
 }
+
 
 main() {
     checkDependencies &&
