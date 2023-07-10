@@ -9,3 +9,4 @@
 |-|-|
 | [iptables_rate_limit.sh](shell-scripts/iptables_rate_limit.sh) | Rate limit requests with iptables |
 |[sentry-backup.sh](shell-scripts/sentry-backup.sh)| Backup and upload sentry dump to nexus storage |
+| [mysqldump.sh](shell-scripts/mysql/mysqldump.sh) | Backup and upload Mysql databases to S3 storage |
