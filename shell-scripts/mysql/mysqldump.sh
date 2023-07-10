@@ -107,13 +107,12 @@ createDump() {
 s3RotateDumps() {
     OLDER_THOSE_DAYS=$(date --date "${S3_DUMP_ROTATE_DAYS} days ago" +%s)
     for db_dump in ${BACKUP_DATABASES}; do
-        s3cmd ls s3://"${S3CMD_BUCKET}"/"${db_dump}"."${DUMP_FORMAT}" | awk '{print $2}'
+        s3cmd ls s3://"${S3CMD_BUCKET}"/"${db_dump}". | awk '{print $2}'
     done |
         while read -r line; do
             CREATED_DAY=$(echo -e "${line}" | awk -F. 'END {print $(NF)}' | tr '/_' ' ')
             CREATED_DAY_TIMESTAMP=$(date -d "${CREATED_DAY}" +%s)
             if [[ ${CREATED_DAY_TIMESTAMP} -lt ${OLDER_THOSE_DAYS} ]]; then
-                echo -e "delete: ${line}"
                 s3cmd del --recursive "${line}"
             fi
         done
