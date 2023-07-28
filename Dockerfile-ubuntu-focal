@@ -22,23 +22,27 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     gpg \
     apt-transport-https \
     pigz pbzip2 pixz \
-###( Install google-cloud-sdk )###
-  && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg && apt-get update -yqq && apt-get install google-cloud-sdk -yqq \
-  && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 ###( Install terraform )###
-  && curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+RUN curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
   && unzip -qq /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
+  && rm -f /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+###( Install google-cloud-sdk )###
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - \
+    && apt-get update -y \
+    && apt-get install google-cloud-cli -y \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 ###( Install ansible )###
-  && pip install -U ansible==${ANSIBLE_VERSION} mitogen==${MITOGEN_VERSION} s3cmd==${S3CMD_VERSION} \
+RUN pip install -U ansible==${ANSIBLE_VERSION} mitogen==${MITOGEN_VERSION} s3cmd==${S3CMD_VERSION} \
   && mkdir -p /etc/ansible \
   && echo "[defaults]\nhost_key_checking = False\ninterpreter_python = /usr/bin/python3\nforks = 50\ncallback_whitelist = profile_tasks\ntimeout=60\nstrategy_plugins =  $(pip show mitogen | grep Location | cut -d ' ' -f2)/ansible_mitogen/plugins/strategy\nstrategy = mitogen_linear\ngathering = smart\ngather_subset = all\n[ssh_connection]\npipelining = True\nssh_args = \"-o ControlMaster=auto -o ControlPersist=15m\"\ntransfer_method = piped" > /etc/ansible/ansible.cfg \
 ###( Install dnscontrol )###
-  && curl -L https://github.com/StackExchange/dnscontrol/releases/download/v3.13.0/dnscontrol-Linux -o /usr/local/bin/dnscontrol \
+  && curl -sL https://github.com/StackExchange/dnscontrol/releases/download/v3.13.0/dnscontrol-Linux -o /usr/local/bin/dnscontrol \
   && chmod +x /usr/local/bin/dnscontrol
-
 ###( Install kubectl and helm )###
-RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list \
+RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list \
     && curl -fsSL https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /usr/share/keyrings/helm.gpg > /dev/null \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" > /etc/apt/sources.list.d/helm-stable-debian.list \
     && apt-get update && apt-get install -yqq \
