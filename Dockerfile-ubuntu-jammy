@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:22.04
 LABEL maintainer='Ihor Stetsiuk <stetsyukia@gmail.com>' \
       terraform_version='${TERRAFORM_VERSION}' \
       ansible_version='${ANSIBLE_VERSION}' \
@@ -18,8 +18,21 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     pip \
     jq \
     rsync \
+    ca-certificates \
+    gpg \
+    apt-transport-https \
     pigz pbzip2 pixz \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+###( Install kubectl and helm )###
+RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list \
+    && curl -fsSL https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /usr/share/keyrings/helm.gpg > /dev/null \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" > /etc/apt/sources.list.d/helm-stable-debian.list \
+    && apt-get update && apt-get install -yqq \
+        kubectl \
+        helm \
+        && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
 ###( Install terraform )###
 RUN curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
   && unzip -qq /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin
@@ -30,10 +43,9 @@ RUN pip install -U ansible==${ANSIBLE_VERSION} s3cmd==${S3CMD_VERSION} \
 RUN curl -L https://github.com/StackExchange/dnscontrol/releases/download/${DNSCONTROL_VERSION}/dnscontrol-Linux -o /usr/local/bin/dnscontrol \
   && chmod +x /usr/local/bin/dnscontrol
 ###( Install google-cloud-sdk )###
-RUN  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg \
-  && apt-get update -yqq && apt-get install google-cloud-sdk -yqq \
-  && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y \
+    && apt-get install google-cloud-cli -y \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 COPY config/ansible-jammy.cfg /etc/ansible/ansible.cfg
-
