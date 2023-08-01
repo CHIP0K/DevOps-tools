@@ -34,8 +34,9 @@ RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dea
         && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ###( Install terraform )###
-RUN curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
-  && unzip -qq /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin
+RUN DPK_ARCH=$(dpkg --print-architecture) \
+  && curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${DPK_ARCH}.zip -o /tmp/terraform_${TERRAFORM_VERSION}_linux_${DPK_ARCH}.zip \
+  && unzip -qq /tmp/terraform_${TERRAFORM_VERSION}_linux_${DPK_ARCH}.zip -d /usr/local/bin
 ###( Install ansible )###
 RUN pip install -U ansible==${ANSIBLE_VERSION} s3cmd==${S3CMD_VERSION} \
   && mkdir -p /etc/ansible
