@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.30.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dnsrobocert
+  name: dnsrobocert
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: dnsrobocert
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.30.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/dnsrobocert-default: "true"
+        io.kompose.service: dnsrobocert
+    spec:
+      containers:
+        - image: adferrand/dnsrobocert:3.22.1
+          name: dnsrobocert
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/letsencrypt
+              name: dnsrobocert-claim0
+            - mountPath: /etc/dnsrobocert/config.yaml
+              name: dnsrobocert-claim1
+      restartPolicy: Always
+      volumes:
+        - name: dnsrobocert-claim0
+          persistentVolumeClaim:
+            claimName: dnsrobocert-claim0
+        - name: dnsrobocert-claim1
+          persistentVolumeClaim:
+            claimName: dnsrobocert-claim1
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dnsrobocert-claim0
+  name: dnsrobocert-claim0
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dnsrobocert-claim1
+  name: dnsrobocert-claim1
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
