@@ -17,7 +17,7 @@ on:
 
 env:
   OWNER: chip0k
-  DEVOPS_IMAGE_NAME: terraform-ansible
+  DEVOPS_IMAGE_NAME: devops-tools
 
 jobs:
   build-devops-tools-focal:
