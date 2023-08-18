@@ -20,7 +20,7 @@ db2
 "
 
 checkLock() {
-    if [[ $(pgrep -fc "${0##*/}") -ne 1 ]]; then
+    if [[ $(pgrep -fc "${0##*/}") -gt 1 ]]; then
         echo "Script ${0##*/} is running"
         exit 1
     fi
