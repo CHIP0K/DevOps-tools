@@ -2,13 +2,12 @@
 source /etc/environment
 
 # Variables
-TEMPFILE=$(mktemp)
 TELEGRAM_API_KEY=""
 TELEGRAM_CHAT_ID=""
 
 # Functions
 checkLock() {
-    if [[ $(pgrep -fc "${0##*/}") -ne 1 ]]; then
+    if [[ $(pgrep -fc "${0##*/}") -gt 2 ]]; then
         echo "Script ${0##*/} is running"
         exit 1
     fi
@@ -25,7 +24,8 @@ selectReplicationChannels() {
         "SELECT
             CHANNEL_NAME
         FROM
-            performance_schema.replication_connection_status;"
+            performance_schema.replication_connection_status;" |
+    tr '\n' ' '
 }
 getChannelStatus() {
     mysql -Bsre \
@@ -48,21 +48,20 @@ checkKeys() {
         ;;
     SERVICE_STATE)
         if [[ $VALUE != ON ]]; then
-            echo -e "HOSTNAME=${HOSTNAME}, CHANNEL=${CHANNEL}, ${KEY}=${VALUE}"
+            echo -e "HOSTNAME=${HOSTNAME}, CHANNEL=${CHANNEL}, ${KEY}=${VALUE}%0A"
         fi
         ;;
     LAST_ERROR_NUMBER)
         if [[ $VALUE -ne 0 ]]; then
-            echo -e "HOSTNAME=${HOSTNAME}, CHANNEL=${CHANNEL}, ${KEY}=${VALUE}, ERROR_MESSAGE=${ERROR_MESSAGE}"
+            echo -e "HOSTNAME=${HOSTNAME}, CHANNEL=${CHANNEL}, ${KEY}=${VALUE}, ERROR_MESSAGE=${ERROR_MESSAGE}%0A"
         fi
         ;;
     esac
 }
 channelStatus() {
     REP_CHANNELS=$(selectReplicationChannels)
-    for REP_CHANNEL in $REP_CHANNELS; do
-        getChannelStatus >"${TEMPFILE}"
-        for STATE in $(cat "${TEMPFILE}"); do
+    for REP_CHANNEL in ${REP_CHANNELS}; do
+        for STATE in $(getChannelStatus); do
             KEY=$(echo "${STATE}" | awk -F':' '{print $1}')
             VALUE=$(echo "${STATE}" | awk -F':' '{print $2}')
             checkKeys
@@ -73,8 +72,8 @@ channelStatus() {
 # Main block
 main() {
     checkLock
-    channelStatus | TelegramNotify
-    rm -f "${TEMPFILE}"
+    STATUS=$(channelStatus)
+    echo ${STATUS} | TelegramNotify
 }
 
 main
