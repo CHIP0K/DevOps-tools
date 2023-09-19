@@ -28,10 +28,6 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          flavor: |
-            latest=auto
-            prefix=
-            suffix=
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
       - name: Build and push Dockerfile-k8s-test-v1
         uses: docker/build-push-action@v4
@@ -50,4 +46,4 @@ jobs:
           file: ./test-app/Dockerfile
           build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V2 }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}${{ env.K8S_TEST_IMAGE_V2 }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ env.K8S_TEST_IMAGE_V2 }}
