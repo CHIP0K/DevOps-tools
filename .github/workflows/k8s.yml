@@ -30,7 +30,7 @@ jobs:
         with:
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
           flavor: |
-            latest=auto
+            latest=false
             prefix=
             suffix=
       - name: Build and push Dockerfile-k8s-test-v1
