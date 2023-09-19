@@ -30,9 +30,11 @@ jobs:
         with:
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
           flavor: |
-            latest=false
+            latest=auto
             prefix=
             suffix=
+          tags: |
+            type=raw,value=slim
       - name: Build and push Dockerfile-k8s-test-v1
         uses: docker/build-push-action@v4
         with:
