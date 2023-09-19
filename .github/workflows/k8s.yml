@@ -11,6 +11,8 @@ on:
 env:
   OWNER: chip0k
   K8S_TEST_IMAGE_NAME: k8s-test
+  K8S_TEST_IMAGE_V1: v1
+  K8S_TEST_IMAGE_V2: v2
 
 jobs:
   build-test-image:
@@ -31,13 +33,23 @@ jobs:
           flavor: |
             latest=auto
             prefix=
-            suffix=-v1
+            suffix=
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
-      - name: Build and push Dockerfile-k8s-test
+      - name: Build and push Dockerfile-k8s-test-v1
         uses: docker/build-push-action@v4
         with:
           # platforms: linux/amd64,linux/arm64
           context: ./test-app
           file: ./test-app/Dockerfile
+          build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V1 }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ env.K8S_TEST_IMAGE_V1 }}
+      - name: Build and push Dockerfile-k8s-test-v2
+        uses: docker/build-push-action@v4
+        with:
+          # platforms: linux/amd64,linux/arm64
+          context: ./test-app
+          file: ./test-app/Dockerfile
+          build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V2 }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}${{ env.K8S_TEST_IMAGE_V2 }}

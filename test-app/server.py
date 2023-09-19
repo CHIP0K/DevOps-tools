@@ -1,9 +1,11 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import socket
 import sys
+import os
 
 SERVER_BIND_IP = '0.0.0.0'
 SERVER_PORT = 8000
+APP_VERSION = os.getenv('APP_VERSION')
 arg1 = int(sys.argv[1])
 arg2 = int(sys.argv[2])
 arg3 = str(sys.argv[3])
@@ -19,9 +21,11 @@ class SimpleHTTPRequestHeader(BaseHTTPRequestHandler):
 		self.wfile.write(b'<b>Server ip address is </b>' + socket.gethostbyname("localhost").encode() + b'<br>')
 		self.wfile.write(b'<b>Arg 1: </b>' + str(arg1).encode() + b'<br>')
 		self.wfile.write(b'<b>Arg 2: </b>' + str(arg2).encode() + b'<br>')
-		self.wfile.write(b'<b>Arg 3: </b>' + str(arg3).encode() + b'<br>')
+		self.wfile.write(b'<b>Arg 3: </b>' + str(arg3).encode() + b'<br><br>')
+		self.wfile.write(b'<h3><font color=red> API version: </font color></h3>' + str(APP_VERSION).encode() + b'<br>')
 
 
 httpd = HTTPServer((SERVER_BIND_IP, SERVER_PORT), SimpleHTTPRequestHeader)
 print(f'Listening on: {SERVER_BIND_IP}:{SERVER_PORT}')
 httpd.serve_forever()
+
