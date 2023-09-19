@@ -22,7 +22,7 @@ class SimpleHTTPRequestHeader(BaseHTTPRequestHandler):
 		self.wfile.write(b'<b>Arg 1: </b>' + str(arg1).encode() + b'<br>')
 		self.wfile.write(b'<b>Arg 2: </b>' + str(arg2).encode() + b'<br>')
 		self.wfile.write(b'<b>Arg 3: </b>' + str(arg3).encode() + b'<br><br>')
-		self.wfile.write(b'<h3><font color=red> API version: </font color></h3>' + str(APP_VERSION).encode() + b'<br>')
+		self.wfile.write(b'<h3><font color=red> API version: </font color>' + str(APP_VERSION).encode() + b'</h3><br>')
 
 
 httpd = HTTPServer((SERVER_BIND_IP, SERVER_PORT), SimpleHTTPRequestHeader)
