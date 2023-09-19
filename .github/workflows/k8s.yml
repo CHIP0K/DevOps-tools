@@ -38,6 +38,6 @@ jobs:
         with:
           # platforms: linux/amd64,linux/arm64
           context: ./test-app
-          file: Dockerfile
+          file: ./test-app/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
