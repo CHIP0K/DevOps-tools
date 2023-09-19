@@ -29,8 +29,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
-          tags: |
-            type=ref,event=pr
+          flavor: |
+            latest=auto
+            prefix=
+            suffix=
       - name: Build and push Dockerfile-k8s-test-v1
         uses: docker/build-push-action@v4
         with:
