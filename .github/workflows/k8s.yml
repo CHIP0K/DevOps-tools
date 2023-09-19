@@ -37,7 +37,7 @@ jobs:
           file: ./test-app/Dockerfile
           build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V1 }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}-${{ env.K8S_TEST_IMAGE_V1 }}
+          tags: ${{ env.K8S_TEST_IMAGE_V1 }}
       - name: Build and push Dockerfile-k8s-test-v2
         uses: docker/build-push-action@v4
         with:
@@ -46,4 +46,4 @@ jobs:
           file: ./test-app/Dockerfile
           build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V2 }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}-${{ env.K8S_TEST_IMAGE_V2 }}
+          tags: ${{ env.K8S_TEST_IMAGE_V2 }}
