@@ -31,7 +31,7 @@ jobs:
           flavor: |
             latest=auto
             prefix=
-            suffix=-focal
+            suffix=-v1
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
       - name: Build and push Dockerfile-k8s-test
         uses: docker/build-push-action@v4
