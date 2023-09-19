@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - "k8s-*"
-    tags:
-      - "k8s-v*"
+    # tags:
+    #   - "k8s-v*"
 
 env:
   OWNER: chip0k
