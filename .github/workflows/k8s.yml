@@ -26,9 +26,11 @@ jobs:
           logout: true
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.OWNER }}/${{ env.K8S_TEST_IMAGE_NAME }}
+          tags: |
+            type=ref,event=pr
       - name: Build and push Dockerfile-k8s-test-v1
         uses: docker/build-push-action@v4
         with:
@@ -37,13 +39,13 @@ jobs:
           file: ./test-app/Dockerfile
           build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V1 }}
           push: true
-          tags: ${{ env.K8S_TEST_IMAGE_V1 }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ env.K8S_TEST_IMAGE_V1 }}
       - name: Build and push Dockerfile-k8s-test-v2
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           # platforms: linux/amd64,linux/arm64
           context: ./test-app
           file: ./test-app/Dockerfile
           build-args: APP_VERSION=${{ env.K8S_TEST_IMAGE_V2 }}
           push: true
-          tags: ${{ env.K8S_TEST_IMAGE_V2 }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ env.K8S_TEST_IMAGE_V2 }}
