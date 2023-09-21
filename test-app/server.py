@@ -18,6 +18,7 @@ class SimpleHTTPRequestHeader(BaseHTTPRequestHandler):
 		self.end_headers()
 		self.wfile.write(b'<h1><font color=green> Hello from Kubernates!</font color></h1>'+ b'<br>')
 		self.wfile.write(b'<b>Hostname: </b>' + socket.gethostname().encode() + b'<br>')
+		self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
 		self.wfile.write(b'<b>Server ip address is </b>' + socket.gethostbyname("localhost").encode() + b'<br>')
 		self.wfile.write(b'<b>Arg 1: </b>' + str(arg1).encode() + b'<br>')
 		self.wfile.write(b'<b>Arg 2: </b>' + str(arg2).encode() + b'<br>')
