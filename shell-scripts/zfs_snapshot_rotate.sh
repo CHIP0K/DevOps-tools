@@ -6,13 +6,32 @@ ROTATE_HOURS="24"
 LOGFILE=/var/log/zfs.log
 ZPOOL_NAME="zp_mysql"
 ZFS_DATASET="mysql/data"
+MYSQL_CONFIG_PATH="${1:-~/.my.cnf}"
 
 
 checkLock() {
-    if [[ $(pgrep -fc "${0##*/}") -gt 1 ]]; then
+    if [[ $(pgrep -fc "${0##*/}") -gt 2 ]]; then
         echo "Script ${0##*/} is running"
         exit 1
     fi
+}
+
+mysql_prepare() {
+    case $1 in
+    lock)
+        mysql --defaults-file="${MYSQL_CONFIG_PATH}" -Bse "
+        SET autocommit=OFF;
+        FLUSH LOGS;
+        FLUSH TABLES WITH READ LOCK;
+        "
+        ;;
+    unlock)
+        mysql --defaults-file="${MYSQL_CONFIG_PATH}" -Bse "
+        SET autocommit=ON;
+        UNLOCK TABLES;
+        "
+        ;;
+    esac
 }
 
 # Function to create a snapshot with the current date and time
@@ -37,7 +56,9 @@ delete_old_snapshots() {
 
 main() {
     checkLock
+    mysql_prepare lock
     create_snapshot
+    mysql_prepare unlock
     delete_old_snapshots
 }
 
