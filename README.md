@@ -12,3 +12,4 @@
 | [mysqldump.sh](shell-scripts/mysql/mysqldump.sh) | Backup and upload Mysql databases to S3 storage |
 | [zfs_snapshot_rotate.sh](shell-scripts/zfs_snapshot_rotate.sh) | Create zfs snapshots and remove all snapshots that are older than 24 hours. |
 | [mysql_replication_monitoring.sh](shell-scripts/mysql/mysql_replication_monitoring.sh) | Base monitoring tool for MySQL multisource replication, with notify to telegram |
+|[backup-vaultwarden.sh](shell-scripts/backup-vaultwarden.sh)|Create VaultVarden dump|
