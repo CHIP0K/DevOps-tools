@@ -17,7 +17,7 @@ r = redis.Redis(host=redis_host,
                 db=redis_db,
                 password=redis_password)
 
-keys = r.keys("*") # Get all keys from Redis
+keys = r.keys("*") # Get all keys from Redis. More details about patterns: https://redis.io/commands/keys/
 
 def set_ttl(keys):
     for key in keys:
