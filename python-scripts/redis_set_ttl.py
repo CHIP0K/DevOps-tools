@@ -17,7 +17,7 @@ r = redis.Redis(host=redis_host,
                 db=redis_db,
                 password=redis_password)
 
-keys = r.keys("binom_click_id*") # Get all keys from Redis
+keys = r.keys("*") # Get all keys from Redis
 
 def set_ttl(keys):
     for key in keys:
