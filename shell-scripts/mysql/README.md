@@ -4,9 +4,9 @@
 
 ## for only script
 
-If you have to convert a single table: set variable DB_TABLE=tablename
-If commenting DB_TABLE, this is a script to convert all tables in the database
-If you have to convert a single table with a primary key: set variable PRIMARY_INDEX_KEY=primary_key
+If you have to convesion a single table: set variable DB_TABLE=tablename
+If commenting DB_TABLE, this is a script to convesion all tables in the database
+If you have to convesion a single table with a primary key: set variable PRIMARY_INDEX_KEY=primary_key
 
 ### Example import to elasticsearch with usage logstash
 
