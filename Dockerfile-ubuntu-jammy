@@ -18,6 +18,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     pip \
     jq \
     rsync \
+    rclone \
     ca-certificates \
     gpg \
     apt-transport-https \
