@@ -5,9 +5,8 @@ LABEL maintainer='Ihor Stetsiuk <stetsyukia@gmail.com>' \
       version='0.2.0'
 
 ### environment
-ENV TERRAFORM_VERSION 1.5.5
+ENV TERRAFORM_VERSION 1.9.2
 ENV ANSIBLE_VERSION 2.10.7
-ENV MITOGEN_VERSION 0.3.3
 ENV S3CMD_VERSION 2.3.0
 
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -21,6 +20,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     rclone \
     ca-certificates \
     gpg \
+    gnupg \
     apt-transport-https \
     pigz pbzip2 pixz \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
@@ -35,15 +35,17 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
     && apt-get install google-cloud-cli -y \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 ###( Install ansible )###
-RUN pip install -U ansible==${ANSIBLE_VERSION} mitogen==${MITOGEN_VERSION} s3cmd==${S3CMD_VERSION} \
+RUN pip install -U ansible==${ANSIBLE_VERSION} s3cmd==${S3CMD_VERSION} netaddr==1.3.0 \
   && mkdir -p /etc/ansible \
-  && echo "[defaults]\nhost_key_checking = False\ninterpreter_python = /usr/bin/python3\nforks = 50\ncallback_whitelist = profile_tasks\ntimeout=60\nstrategy_plugins =  $(pip show mitogen | grep Location | cut -d ' ' -f2)/ansible_mitogen/plugins/strategy\nstrategy = mitogen_linear\ngathering = smart\ngather_subset = all\n[ssh_connection]\npipelining = True\nssh_args = \"-o ControlMaster=auto -o ControlPersist=15m\"\ntransfer_method = piped" > /etc/ansible/ansible.cfg \
-###( Install dnscontrol )###
   && curl -sL https://github.com/StackExchange/dnscontrol/releases/download/v3.13.0/dnscontrol-Linux -o /usr/local/bin/dnscontrol \
   && chmod +x /usr/local/bin/dnscontrol
+
+COPY config/ansible-jammy.cfg /etc/ansible/ansible.cfg
+
 ###( Install kubectl and helm )###
-RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/kubernetes-archive-keyring.gpg add - \
-    && echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list \
+RUN mkdir -p /etc/apt/keyrings && curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg \
+    && chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg \
+    && echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' > /etc/apt/sources.list.d/kubernetes.list \
     && curl -fsSL https://baltocdn.com/helm/signing.asc | apt-key --keyring /usr/share/keyrings/helm.gpg add - > /dev/null \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" > /etc/apt/sources.list.d/helm-stable-debian.list \
     && apt-get update && apt-get install -yqq \
