@@ -37,6 +37,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
 ###( Install ansible )###
 RUN pip install -U ansible==${ANSIBLE_VERSION} s3cmd==${S3CMD_VERSION} netaddr \
   && mkdir -p /etc/ansible \
+  && ansible-galaxy collection install ansible.utils community.general \
   && curl -sL https://github.com/StackExchange/dnscontrol/releases/download/v3.13.0/dnscontrol-Linux -o /usr/local/bin/dnscontrol \
   && chmod +x /usr/local/bin/dnscontrol
 
