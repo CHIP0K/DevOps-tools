@@ -2,6 +2,8 @@
 
 ## convert-to-json.sh
 
+The `convert-to-json.sh` script is a shell script designed to convert data from a MySQL table to JSON format. It includes functions to generate a JSON template from table columns, export the JSON data from a table, and dump all tables in a database to JSON. The script allows specifying a database, table, and a limit range for data export, and handles both single table and multiple tables conversions.
+
 ## for only script
 
 If you have to convesion a single table: set variable DB_TABLE=tablename
