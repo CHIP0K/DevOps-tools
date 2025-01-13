@@ -1,0 +1,57 @@
+ARG BASE_IMAGE=alpine
+ARG BASE_TAG=3.21
+FROM ${BASE_IMAGE}:${BASE_TAG}
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETPLATFORM
+
+### environment
+ENV TERRAFORM_VERSION="1.10.4"
+ENV ANSIBLE_VERSION="11.1.0"
+ENV S3CMD_VERSION="2.4.0"
+ENV DNSCONTROL_VERSION="4.15.3"
+ENV KUBECTL_VERSION="v1.32.0"
+ENV HELM_VERSION="v3.16.4"
+
+RUN apk add --no-cache \
+    bash \
+    curl \
+    unzip \
+    git \
+    py3-pip \
+    jq \
+    yq \
+    rsync \
+    rclone \
+    ca-certificates \
+    gnupg \
+    pigz pixz \
+    && rm -rf /var/cache/apk/*
+
+###( Install kubectl )###
+RUN curl -sLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl" \
+    && curl -sLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl.sha256" \
+    && echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c - \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    && rm kubectl kubectl.sha256
+###( Install helm )###
+RUN curl -sLO https://get.helm.sh/helm-${HELM_VERSION}-linux-${TARGETARCH}.tar.gz \
+    && tar -zxvf helm-${HELM_VERSION}-linux-${TARGETARCH}.tar.gz \
+    && install -o root -g root -m 0755 linux-${TARGETARCH}/helm /usr/local/bin/helm \
+    && rm -rf linux-${TARGETARCH} helm-${HELM_VERSION}-linux-${TARGETARCH}.tar.gz
+###( Install terraform )###
+RUN curl -sLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${TARGETARCH}.zip \
+    && unzip -qq terraform_${TERRAFORM_VERSION}_linux_${TARGETARCH}.zip \
+    && install -o root -g root -m 0755 terraform /usr/local/bin/terraform \
+    && rm -rf terraform_${TERRAFORM_VERSION}_linux_${TARGETARCH}.zip terraform
+###( Install ansible s3cmd netaddr )###
+RUN pip install --break-system-packages -U ansible==${ANSIBLE_VERSION} s3cmd==${S3CMD_VERSION} netaddr==1.3.0 \
+    && mkdir -p /etc/ansible \
+    && ansible-galaxy collection install ansible.utils community.general --force
+###( Install dnscontrol )###
+RUN curl -sLO https://github.com/StackExchange/dnscontrol/releases/download/v${DNSCONTROL_VERSION}/dnscontrol_${DNSCONTROL_VERSION}_linux_${TARGETARCH}.tar.gz \
+    && tar -zxvf dnscontrol_${DNSCONTROL_VERSION}_linux_${TARGETARCH}.tar.gz \
+    && install -o root -g root -m 0755 dnscontrol /usr/local/bin/dnscontrol \
+    && rm -rf dnscontrol_${DNSCONTROL_VERSION}_linux_${TARGETARCH}.tar.gz dnscontrol LICENSE README.md
+
