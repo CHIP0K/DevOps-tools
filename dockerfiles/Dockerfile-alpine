@@ -15,11 +15,13 @@ ENV KUBECTL_VERSION="v1.32.0"
 ENV HELM_VERSION="v3.16.4"
 
 RUN apk add --no-cache \
+    bash \
     curl \
     unzip \
     git \
     py3-pip \
     jq \
+    yq \
     rsync \
     rclone \
     ca-certificates \
