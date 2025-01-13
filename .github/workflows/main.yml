@@ -11,9 +11,15 @@ on:
       - ".gitignore"
       - "LICENSE"
       - "README.md"
-  # pull_request:
-  #   branches:
-  #     - "main"
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   OWNER: chip0k
