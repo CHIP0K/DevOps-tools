@@ -35,16 +35,13 @@ DUMP_TIME=$(date +"%F_%R")
 DUMP_ROTATE_DAYS="0"
 COPY_TO_S3="yes"
 S3_DUMP_ROTATE_DAYS=30
-S3CMD_BUCKET="db.backup/databases"
+S3CMD_BUCKET="db.backup/expertchat-db-cluster-nyc1"
+GZIP_COMPRESSION_LEVEL=9
 
 BACKUP_DATABASES="
-database1
-database2
+expertchat
 "
-IGNORE_TABLES_DATA="
-table1
-table2
-"
+IGNORE_TABLES_DATA="math_solvers"
 
 readonly \
     MYSQL_CONFIG_PATH \
@@ -58,7 +55,8 @@ readonly \
     S3_DUMP_ROTATE_DAYS \
     S3CMD_BUCKET \
     BACKUP_DATABASES \
-    IGNORE_TABLES_DATA
+    IGNORE_TABLES_DATA \
+    GZIP_COMPRESSION_LEVEL
 
 check_lock_running_script() {
     if [[ $(pgrep -fc "${0##*/}") -gt 1 ]]; then
@@ -102,13 +100,13 @@ create_dump_table() {
                 --set-gtid-purged=OFF \
                 --no-data \
                 --single-transaction \
-                "${db}" "${dump_table}" | gzip -9 >"${FILE_TABLE_SCHEMA}.gz"
+                "${db}" "${dump_table}" | gzip -${GZIP_COMPRESSION_LEVEL} >"${FILE_TABLE_SCHEMA}.gz"
             if [[ -z ${IGNORE_TABLES_DATA} ]] || [[ ${IGNORE_TABLES_DATA} != *"${dump_table}"* ]]; then
                 mysqldump  --defaults-file="${MYSQL_CONFIG_PATH}" \
                     --no-tablespaces \
                     --set-gtid-purged=OFF \
                     --single-transaction \
-                    "${db}" "${dump_table}" | gzip -9 >"${FILE_TABLE_DATA}.gz"
+                    "${db}" "${dump_table}" | gzip -${GZIP_COMPRESSION_LEVEL} >"${FILE_TABLE_DATA}.gz"
             fi
         done
     done
@@ -126,7 +124,7 @@ create_full_dump() {
             --events \
             --source-data \
             --no-tablespaces \
-            --databases "${db}" | gzip >"${DB_PATH}"/"${db}".sql.gz
+            --databases "${db}" | gzip -${GZIP_COMPRESSION_LEVEL} >"${DB_PATH}"/"${db}".sql.gz
     done
 }
 
