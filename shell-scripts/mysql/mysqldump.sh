@@ -35,13 +35,14 @@ DUMP_TIME=$(date +"%F_%R")
 DUMP_ROTATE_DAYS="0"
 COPY_TO_S3="yes"
 S3_DUMP_ROTATE_DAYS=30
-S3CMD_BUCKET="db.backup/expertchat-db-cluster-nyc1"
+S3CMD_BUCKET="db.backup/databases"
 GZIP_COMPRESSION_LEVEL=9
 
 BACKUP_DATABASES="
-expertchat
+db1
+db2
 "
-IGNORE_TABLES_DATA="math_solvers"
+IGNORE_TABLES_DATA="failed_jobs"
 
 readonly \
     MYSQL_CONFIG_PATH \
