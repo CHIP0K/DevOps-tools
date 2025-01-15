@@ -16,6 +16,7 @@ ENV HELM_VERSION="v3.16.4"
 
 RUN apk add --no-cache \
     bash \
+    perl \
     openssh-client \
     curl \
     unzip \
