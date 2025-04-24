@@ -4,45 +4,57 @@
 
 import redis
 import threading
+import logging
+import os
 
-redis_host = '127.0.0.1'  # Redis server address
-redis_port = 6379  # Redis server port
-redis_db = 0  # Redis server db
-redis_password = 'your_requirepass'  # Redis server requirepass
-count_chunk_size = 100  # Number of chunks to split keys into
-ttl_seconds = 120 * 60  # TTL in seconds
+# Logging configuration
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-r = redis.Redis(host=redis_host,
-                port=redis_port,
-                db=redis_db,
-                password=redis_password)
+# Redis configuration
+redis_host = os.getenv("REDIS_HOST", "127.0.0.1")
+redis_port = int(os.getenv("REDIS_PORT", 6379))
+redis_db = int(os.getenv("REDIS_DB", 0))
+redis_password = os.getenv("REDIS_PASSWORD", "your_requirepass")
+count_chunk_size = 100
+ttl_seconds = 120 * 60
 
-keys = r.keys("*") # Get all keys from Redis. More details about patterns: https://redis.io/commands/keys/
+# Redis connection
+r = redis.Redis(host=redis_host, port=redis_port, db=redis_db, password=redis_password)
 
 def set_ttl(keys):
-    for key in keys:
-        r.expire(key, ttl_seconds)
-        # print(f"TTL for {key} has been set.") # Uncomment this line to see the progress
-    print(f"TTL for {len(keys)} keys has been set.")
+    try:
+        for key in keys:
+            r.expire(key, ttl_seconds)
+        logging.info(f"TTL for {len(keys)} keys has been set.")
+    except Exception as e:
+        logging.error(f"Error setting TTL: {e}")
 
 def main():
-    # Split keys into chunks
-    chunk_size = len(keys) // count_chunk_size
-    key_chunks = [keys[i:i + chunk_size] for i in range(0, len(keys), chunk_size)]
+    try:
+        # Use SCAN instead of KEYS
+        keys = []
+        cursor = "0"
+        while cursor != 0:
+            cursor, batch = r.scan(cursor=cursor, match="*", count=1000)
+            keys.extend(batch)
 
-    # Create threads for each chunk
-    threads = []
-    for chunk in key_chunks:
-        thread = threading.Thread(target=set_ttl, args=(chunk,))
-        threads.append(thread)
-        thread.start()
+        # Split keys into chunks
+        key_chunks = [keys[i:i + count_chunk_size] for i in range(0, len(keys), count_chunk_size)]
 
-    # Wait for all threads to finish
-    for thread in threads:
-        thread.join()
+        # Create threads for each chunk
+        threads = []
+        for chunk in key_chunks:
+            thread = threading.Thread(target=set_ttl, args=(chunk,))
+            threads.append(thread)
+            thread.start()
 
-    print("All threads have finished.")
+        # Wait for all threads to finish
+        for thread in threads:
+            thread.join()
 
+        logging.info("All threads have finished.")
+    except Exception as e:
+        logging.error(f"Error in main: {e}")
 
 if __name__ == "__main__":
     main()

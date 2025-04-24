@@ -352,3 +352,10 @@ MigrationBackup/
 
 # Ignore Wiki pages
 wiki/
+
+# Pycharm IDE
+.venv/
+.idea/
+
+# ignore AI prompts
+.github/copilot-instructions.md
